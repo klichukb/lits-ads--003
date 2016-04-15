@@ -32,7 +32,7 @@ def _merge_sort(seq, left, right, aux):
             right_pos += 1
         pos += 1
 
-    seq[left:right+1] = aux[left:right+1]
+    seq[left:right + 1] = aux[left:right + 1]
 
 
 def task(array, discount):
@@ -54,6 +54,7 @@ def task(array, discount):
             result += array[i]
     return result
 
+
 def main():
     # read
     with open(INFILE, 'r') as fl:
@@ -65,7 +66,7 @@ def main():
 
     # write
     with open(OUTFILE, 'w') as fl:
-        fl.write(repr(result))
+        fl.write('{:.2f}'.format(result))
 
 
 if __name__ == '__main__':
