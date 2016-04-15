@@ -38,8 +38,12 @@ def _merge_sort(seq, left, right, aux):
 def task(array, discount):
     arr_len = len(array)
     mod = 1 - discount / 100.0
-    offset = arr_len / 3 - 1
 
+    # a shortcut, no discount = total sum.
+    if discount == 0:
+        return sum(array)
+
+    offset = arr_len / 3 - 1
     merge_sort(array)
 
     result = 0
