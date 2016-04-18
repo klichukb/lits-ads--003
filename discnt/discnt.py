@@ -4,13 +4,13 @@ OUTFILE = 'discnt.out'
 
 def merge_sort(seq):
     aux = [None] * len(seq)
-    _merge_sort(seq, 0, len(seq) - 1, aux)
+    return _merge_sort(seq, 0, len(seq) - 1, aux)
 
 
 def _merge_sort(seq, left, right, aux):
     seq_len = len(seq)
     if left == right:
-        return
+        return seq
 
     step = 1
     while step < seq_len:
@@ -38,6 +38,7 @@ def _merge_sort(seq, left, right, aux):
                     right_pos += 1
                 pos += 1
         seq, aux = aux, seq
+    return seq
 
 
 def task(array, discount):
@@ -49,7 +50,7 @@ def task(array, discount):
         return sum(array)
 
     offset = arr_len / 3 - 1
-    merge_sort(array)
+    array = merge_sort(array)
 
     result = 0
     for i in xrange(arr_len):
