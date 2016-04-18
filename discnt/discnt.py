@@ -1,38 +1,43 @@
 INFILE = 'discnt.in'
 OUTFILE = 'discnt.out'
 
-# Merge sort (recursive)
-# O(n logn)
-
 
 def merge_sort(seq):
-    """
-    A convenience function for Merge Sort.
-    """
     aux = [None] * len(seq)
     _merge_sort(seq, 0, len(seq) - 1, aux)
 
 
 def _merge_sort(seq, left, right, aux):
+    seq_len = len(seq)
     if left == right:
         return
-    middle = (left + right) // 2
-    left_pos = left
-    right_pos = middle + 1
-    _merge_sort(seq, left_pos, middle, aux)
-    _merge_sort(seq, right_pos, right, aux)
 
-    pos = left
-    while pos <= right:
-        if left_pos <= middle and (right_pos > right or seq[left_pos] > seq[right_pos]):
-            aux[pos] = seq[left_pos]
-            left_pos += 1
-        else:
-            aux[pos] = seq[right_pos]
-            right_pos += 1
-        pos += 1
-
-    seq[left:right + 1] = aux[left:right + 1]
+    step = 1
+    while step < seq_len:
+        step <<= 1
+        for i in range(0, seq_len, step):
+            right = min(i + step - 1, seq_len - 1)
+            if i == right:
+                aux[i] = seq[i]
+                continue
+            elif i + 1 == right:
+                if seq[i] >= seq[right]:
+                    aux[i], aux[right] = seq[i], seq[right]
+                else:
+                    aux[i], aux[right] = seq[right], seq[i]
+                continue
+            middle = i + step // 2 - 1
+            pos = left_pos = i
+            right_pos = middle + 1
+            while pos <= right:
+                if left_pos <= middle and (right_pos > right or seq[left_pos] > seq[right_pos]):
+                    aux[pos] = seq[left_pos]
+                    left_pos += 1
+                else:
+                    aux[pos] = seq[right_pos]
+                    right_pos += 1
+                pos += 1
+        seq, aux = aux, seq
 
 
 def task(array, discount):
@@ -61,7 +66,6 @@ def main():
         array = [int(token) for token in fl.readline().split()]
         discount = int(fl.readline())
 
-    # do
     result = task(array, discount)
 
     # write
