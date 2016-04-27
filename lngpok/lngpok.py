@@ -55,6 +55,9 @@ def task(array):
         i += 1
 
     buffer = jokers = i
+    if jokers == arr_len:
+        return arr_len
+
     if i == arr_len - 1:
         return jokers + 1
 
@@ -86,7 +89,7 @@ def task(array):
             seq = 1
             cut = None
 
-    if seq > 1:
+    if buffer:
         seq += buffer
     if seq > max_seq:
         max_seq = seq
