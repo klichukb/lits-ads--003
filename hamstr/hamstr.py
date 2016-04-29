@@ -94,7 +94,7 @@ def main():
 
     # write
     with open(OUTFILE, 'w') as fl:
-        fl.write('{:.2f}'.format(result))
+        fl.write(str(result))
 
 if __name__ == '__main__':
     main()
