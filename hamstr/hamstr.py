@@ -4,11 +4,7 @@ INFILE = 'hamstr.in'
 OUTFILE = 'hamstr.out'
 
 
-def merge_sort(array, aux, arr_len, index=None):
-    """
-    Ugly but optimal merge sort.
-    Use `index` in order specify array index to sort by in case array is array of lists.
-    """
+def merge_sort(array, aux, arr_len):
     right = arr_len
     if arr_len < 2:
         return array
@@ -23,13 +19,7 @@ def merge_sort(array, aux, arr_len, index=None):
                 aux[i] = array[i]
                 continue
             elif i + 1 == right:
-                # ugly implementation of support for different compare keys
-                ki = array[i]
-                kr = array[right]
-                if index is not None:
-                    ki = ki[index]
-                    kr = kr[index]
-                if ki <= kr:
+                if array[i] < array[right]:
                     aux[i], aux[right] = array[i], array[right]
                 else:
                     aux[i], aux[right] = array[right], array[i]
@@ -38,11 +28,7 @@ def merge_sort(array, aux, arr_len, index=None):
             pos = left_pos = i
             right_pos = middle + 1
             while pos <= right:
-                # ugly implementation of support for different compare keys
-                if left_pos <= middle and (
-                        right_pos > right or
-                        (array[left_pos] if index is None else array[left_pos][index]) <
-                        (array[right_pos] if index is None else array[right_pos][index])):
+                if left_pos <= middle and (right_pos > right or array[left_pos] < array[right_pos]):
                     aux[pos] = array[left_pos]
                     left_pos += 1
                 else:
@@ -52,35 +38,26 @@ def merge_sort(array, aux, arr_len, index=None):
         array, aux = aux, array
     return array
 
-def get_approx_k(array, aux, arr_len, total):
-    """
-    Attempt to get approximate K position of maximum items that is not higher than `total`.
-    """
-    array = merge_sort(array, aux, arr_len, 1)
-
-    sum_g = 0
-    sum_total = 0
-    for i in xrange(arr_len):
-        sum_total += sum_g + array[i][1] * i + array[i][0]
-        sum_g += array[i][1]
-        if sum_total > total:
-            return i - 1
-    return i
-
 
 def task(total, array):
     arr_len = len(array)
     aux = [None] * arr_len
     sort_aux = [None] * arr_len
-    nmin = get_approx_k(array, aux, arr_len, total)
+    left = 0
+    right = arr_len - 1
 
-    for i in xrange(nmin, arr_len):
-        for j in xrange(arr_len):
-            aux[j] = array[j][0] + i * array[j][1]
+    while left <= right:
+        middle = left + (right - left) / 2
+        aux[:] = [array[j][0] + middle * array[j][1] for j in xrange(arr_len)]
         _aux = merge_sort(aux, sort_aux, arr_len)
-        if sum(_aux[:i + 1]) > total:
-            return i
-    return arr_len
+        nsum = sum(_aux[:middle + 1])
+        if nsum > total:
+            right = middle - 1
+        elif nsum < total:
+            left = middle + 1
+        else:
+            return middle + 1
+    return left
 
 
 def main():
