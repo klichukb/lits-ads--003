@@ -46,7 +46,7 @@ def task(total, array):
     left = 0
     right = arr_len - 1
 
-    while left < right:
+    while left <= right:
         middle = left + (right - left) // 2
         aux[:] = [array[j][0] + middle * array[j][1] for j in xrange(arr_len)]
         _aux = merge_sort(aux, sort_aux, arr_len)
