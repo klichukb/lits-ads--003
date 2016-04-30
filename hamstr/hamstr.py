@@ -13,7 +13,7 @@ def merge_sort(array, aux, arr_len):
 
     while step < arr_len:
         step <<= 1
-        for i in range(0, arr_len, step):
+        for i in xrange(0, arr_len, step):
             right = min(i + step - 1, arr_len - 1)
             if i == right:
                 aux[i] = array[i]
@@ -46,17 +46,15 @@ def task(total, array):
     left = 0
     right = arr_len - 1
 
-    while left <= right:
-        middle = left + (right - left) / 2
+    while left < right:
+        middle = left + (right - left) // 2
         aux[:] = [array[j][0] + middle * array[j][1] for j in xrange(arr_len)]
         _aux = merge_sort(aux, sort_aux, arr_len)
         nsum = sum(_aux[:middle + 1])
         if nsum > total:
             right = middle - 1
-        elif nsum < total:
+        elif nsum <= total:
             left = middle + 1
-        else:
-            return middle + 1
     return left
 
 
@@ -65,7 +63,7 @@ def main():
     with open(INFILE, 'r') as fl:
         total = int(fl.readline())
         count = int(fl.readline())
-        array = [tuple(int(h) for h in fl.readline().split()) for i in range(count)]
+        array = [[int(h) for h in fl.readline().split()] for i in range(count)]
 
     result = task(total, array)
 
