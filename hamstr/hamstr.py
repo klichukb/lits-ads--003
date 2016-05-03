@@ -23,14 +23,9 @@ def adapt_quick_sort(array):
         return insert_sort(array)
     else:
         pivot = array[0]
-        less, more, equal = [], [], []
-        for x in array:
-            if x < pivot:
-                less.append(x)
-            elif x == pivot:
-                equal.append(x)
-            else:
-                more.append(x)
+        less = [v for v in array if v < pivot]
+        more = [v for v in array if v > pivot]
+        equal = array.count(pivot) * [pivot]
         return adapt_quick_sort(less) + equal + adapt_quick_sort(more)
 
 
