@@ -2,41 +2,29 @@ INFILE = 'lngpok.in'
 OUTFILE = 'lngpok.out'
 
 
-def merge_sort(seq, seq_len):
-    """
-    Flat bottom-up merge sort.
-    """
-    aux = [None] * len(seq)
-    if seq_len == 1:
-        return seq
+def insert_sort(array):
+    for i in range(1, len(array)):
+        value = array[i]
+        j = i
+        while j > 0 and array[j - 1] > value:
+            array[j] = array[j - 1]
+            j -= 1
+        array[j] = value
+    return array
 
-    step = 1
-    while step < seq_len:
-        step <<= 1
-        for i in range(0, seq_len, step):
-            right = min(i + step - 1, seq_len - 1)
-            if i == right:
-                aux[i] = seq[i]
-                continue
-            elif i + 1 == right:
-                if seq[i] <= seq[right]:
-                    aux[i], aux[right] = seq[i], seq[right]
-                else:
-                    aux[i], aux[right] = seq[right], seq[i]
-                continue
-            middle = i + step // 2 - 1
-            pos = left_pos = i
-            right_pos = middle + 1
-            while pos <= right:
-                if left_pos <= middle and (right_pos > right or seq[left_pos] < seq[right_pos]):
-                    aux[pos] = seq[left_pos]
-                    left_pos += 1
-                else:
-                    aux[pos] = seq[right_pos]
-                    right_pos += 1
-                pos += 1
-        seq, aux = aux, seq
-    return seq
+
+def adapt_quick_sort(array):
+    length = len(array)
+    if length <= 1:
+        return array
+    if length <= 20:
+        return insert_sort(array)
+    else:
+        pivot = array[0]
+        less = [v for v in array if v < pivot]
+        more = [v for v in array if v > pivot]
+        equal = array.count(pivot) * [pivot]
+        return adapt_quick_sort(less) + equal + adapt_quick_sort(more)
 
 
 def task(array):
@@ -45,7 +33,7 @@ def task(array):
     as soon as possible using jokers.
     """
     arr_len = len(array)
-    array = merge_sort(array, arr_len)
+    array = adapt_quick_sort(array)
 
     i = 0
     seq = max_seq = 1
@@ -55,10 +43,10 @@ def task(array):
         i += 1
 
     buffer = jokers = i
+
     if jokers == arr_len:
         return arr_len
-
-    if i == arr_len - 1:
+    if jokers == arr_len - 1:
         return jokers + 1
 
     i += 1
