@@ -13,7 +13,7 @@ def sum_first_k(array, k):
     elif length == 1:
         return array[0]
 
-    pivot = array[len(array) / 2]
+    pivot = array[len(array) // 2]
     less = [v for v in array if v < pivot]
     less_cnt = len(less)
 
@@ -25,7 +25,7 @@ def sum_first_k(array, k):
     k -= less_cnt
     equal_cnt = array.count(pivot)
     if equal_cnt > k:
-        return k * pivot
+        return (k + 1) * pivot
 
     more = [v for v in array if v > pivot]
     return sum(less) + equal_cnt * pivot + sum_first_k(more, k - equal_cnt)
