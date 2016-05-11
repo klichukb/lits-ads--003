@@ -1,32 +1,34 @@
-import sys
-
 INFILE = 'hamstr.in'
 OUTFILE = 'hamstr.out'
 
 
-def insert_sort(array):
-    for i in range(1, len(array)):
-        value = array[i]
-        j = i
-        while j > 0 and array[j - 1] > value:
-            array[j] = array[j - 1]
-            j -= 1
-        array[j] = value
-    return array
-
-
-def adapt_quick_sort(array):
+def sum_first_k(array, k):
+    """
+    Calculates sum of first K elements recursively (quick select).
+    """
     length = len(array)
-    if length <= 1:
-        return array
-    if length <= 20:
-        return insert_sort(array)
-    else:
-        pivot = array[0]
-        less = [v for v in array if v < pivot]
-        more = [v for v in array if v > pivot]
-        equal = array.count(pivot) * [pivot]
-        return adapt_quick_sort(less) + equal + adapt_quick_sort(more)
+
+    if length == 0:
+        return 0
+    elif length == 1:
+        return array[0]
+
+    pivot = array[len(array) / 2]
+    less = [v for v in array if v < pivot]
+    less_cnt = len(less)
+
+    if less_cnt == k:
+        return sum(less) + pivot
+    elif less_cnt > k:
+        return sum_first_k(less, k)
+
+    k -= less_cnt
+    equal_cnt = array.count(pivot)
+    if equal_cnt > k:
+        return k * pivot
+
+    more = [v for v in array if v > pivot]
+    return sum(less) + equal_cnt * pivot + sum_first_k(more, k - equal_cnt)
 
 
 def task(total, array):
@@ -38,11 +40,9 @@ def task(total, array):
     while left <= right:
         middle = left + (right - left) // 2
         aux[:] = [array[j][0] + middle * array[j][1] for j in xrange(arr_len)]
-        _aux = adapt_quick_sort(aux)
-        nsum = sum(_aux[:middle + 1])
-        if nsum > total:
+        if sum_first_k(aux, middle) > total:
             right = middle - 1
-        elif nsum <= total:
+        else:
             left = middle + 1
     return left
 
