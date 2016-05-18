@@ -9,7 +9,7 @@ def task(N, W, H):
     middle = 1
     while left < right:
         middle = (left + right) // 2
-        curr_n = (middle / W) * (middle / H)
+        curr_n = (middle // W) * (middle // H)
         if curr_n < N:
             left = middle + 1
         elif curr_n >= N:
