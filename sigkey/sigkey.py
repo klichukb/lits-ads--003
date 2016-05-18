@@ -2,32 +2,32 @@ INFILE = 'sigkey.in'
 OUTFILE = 'sigkey.out'
 
 
-def task(fl):
+def task(keys):
     start = ord('a')
     end = ord('z')
     max_n = end - start + 1
-    mask = (1 << max_n - 1) - 1
-    lines = fl.readlines()
-    arr_len = len(lines)
+    arr_len = len(keys)
     seen = set()
     array = [None] * arr_len
 
     for i in xrange(arr_len):
         key = 0
-        for c in lines[i][:-1]:
+        for c in keys[i][:-1]:  # cut `\n`
             key |= 1 << (ord(c) - start)
         array[i] = key
+
+    # start from most problematic keys..
     array.sort(reverse=True)
 
     count = 0
-    for i in xrange(arr_len):
-        x = array[i]
+    for x in array:
         if x in seen:
             seen.remove(x)
             count += 1
             continue
-        expc = ((1 << x.bit_length()) - 1) ^ x
-        seen.add(expc)
+        # regsiter the key, that `x` needs, for further lookup
+        match_key = ((1 << x.bit_length()) - 1) ^ x
+        seen.add(match_key)
     return count
 
 
@@ -35,7 +35,7 @@ def main():
     # read
     with open(INFILE, 'r') as fl:
         count = int(fl.readline())
-        result = task(fl)
+        result = task(fl.readlines())
 
     # write
     with open(OUTFILE, 'w') as fl:
