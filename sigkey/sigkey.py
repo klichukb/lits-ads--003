@@ -4,8 +4,6 @@ OUTFILE = 'sigkey.out'
 
 def task(keys):
     start = ord('a')
-    end = ord('z')
-    max_n = end - start + 1
     arr_len = len(keys)
     seen = set()
     array = [None] * arr_len
@@ -34,7 +32,7 @@ def task(keys):
 def main():
     # read
     with open(INFILE, 'r') as fl:
-        count = int(fl.readline())
+        fl.readline()
         result = task(fl.readlines())
 
     # write
