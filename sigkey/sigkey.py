@@ -23,7 +23,7 @@ def task(keys):
             seen.remove(x)
             count += 1
             continue
-        # regsiter the key, that `x` needs, for further lookup
+        # register the key, that `x` needs, for further lookup
         match_key = ((1 << x.bit_length()) - 1) ^ x
         seen.add(match_key)
     return count
