@@ -54,6 +54,7 @@ def dfs(graph):
     while unvisited:
         for v in dfs_iteration(graph, status, unvisited, unvisited.pop()):
             if v not in order_set:
+                order_set.add(v)
                 yield v
 
 
