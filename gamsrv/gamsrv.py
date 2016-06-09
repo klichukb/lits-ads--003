@@ -47,7 +47,7 @@ def read_graph(fl):
     return graph
 
 
-def shortest_path_for(graph, start_v):
+def shortest_paths(graph, start_v):
     # Dijkstra for a single vertex.
     distances = [float('inf')] * len(graph.vertices)
     distances[start_v.index] = 0
@@ -63,12 +63,12 @@ def shortest_path_for(graph, start_v):
     return distances
 
 
-def all_shortest_paths(graph):
+def max_shortest_paths(graph):
     # Dijkstra for each eligible vertex (non-client).
     for vertex in graph.vertices:
         if vertex.index in graph.client_vertices:
             continue
-        distances = shortest_path_for(graph, vertex)
+        distances = shortest_paths(graph, vertex)
         yield max(dst for v, dst in enumerate(distances) if v in graph.client_vertices)
 
 
@@ -76,7 +76,7 @@ def main():
     # read
     with open(sys.argv[1] if len(sys.argv) > 1 else INFILE, 'r') as fl:
         graph = read_graph(fl)
-        result = min(all_shortest_paths(graph))
+        result = min(max_shortest_paths(graph))
 
     # write
     with open(OUTFILE, 'w') as fl:
