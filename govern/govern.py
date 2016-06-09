@@ -3,6 +3,9 @@ import sys
 INFILE = 'govern.in'
 OUTFILE = 'govern.out'
 
+VISITED = 1
+RESOLVED = 2
+
 
 class Vertex(object):
     def __init__(self, name, out_edges=None):
@@ -26,25 +29,6 @@ class Graph(object):
     def __init__(self, vertices=None):
         self.vertices = vertices or {}
 
-    def get_or_create_vertex(self, name):
-        vertex = self.vertices.get(name)
-        if not vertex:
-            vertex = self.vertices[name] = Vertex(name, [])
-        return vertex
-
-    def __iter__(self):
-        return self.vertices.iterkeys()
-
-    def __getitem__(self, key):
-        return self.get_or_create_vertex(key)
-
-VISITED = 1
-RESOLVED = 2
-
-
-def get_topological_sort(graph):
-    return dfs(graph)
-
 
 def dfs(graph):
     unvisited = set(graph.vertices.values())
@@ -52,20 +36,23 @@ def dfs(graph):
     order_set = set()
 
     while unvisited:
-        for v in dfs_iteration(graph, status, unvisited, unvisited.pop()):
-            if v not in order_set:
-                order_set.add(v)
-                yield v
+        for vertex in dfs_iteration(status, unvisited, unvisited.pop()):
+            if vertex in order_set:
+                continue
+            order_set.add(vertex)
+            yield vertex
 
 
-def dfs_iteration(graph, status, unvisited, start_v):
+def dfs_iteration(status, unvisited, start_v):
     stack = [start_v]
-    while (stack):
+    while stack:
         vertex = stack.pop()
         if vertex in unvisited:
             unvisited.remove(vertex)
+
         if status.get(vertex.name) == RESOLVED:
             continue
+
         neighbors = [edge.end_v for edge in vertex.out_edges if edge.end_v.name not in status]
         if neighbors:
             status[vertex.name] = VISITED
@@ -76,22 +63,35 @@ def dfs_iteration(graph, status, unvisited, start_v):
             yield vertex
 
 
+def get_topological_sort(graph):
+    return dfs(graph)
+
+
 def read_graph(fl):
     graph = Graph()
     for line in fl.readlines():
         _from, to = line.rstrip().split()
-        start_v, end_v = graph[_from], graph[to]
+
+        # get or create start v
+        start_v = graph.vertices.get(_from)
+        if not start_v:
+            start_v = graph.vertices[_from] = Vertex(_from, [])
+        # get or create end v
+        end_v = graph.vertices.get(to)
+        if not end_v:
+            end_v = graph.vertices[to] = Vertex(to, [])
+
         start_v.out_edges.append(Edge(start_v, end_v))
     return graph
 
 
 def main():
-
     # read
     with open(sys.argv[1] if len(sys.argv) > 1 else INFILE, 'r') as fl:
         graph = read_graph(fl)
         path = get_topological_sort(graph)
 
+    # yes, all in memory. but only one I/O call on write(), right?
     result = '\n'.join(str(line) for line in path) + '\n'
 
     # write
