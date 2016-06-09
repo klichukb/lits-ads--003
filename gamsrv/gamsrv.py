@@ -4,9 +4,6 @@ import sys
 INFILE = 'gamsrv.in'
 OUTFILE = 'gamsrv.out'
 
-VISITED = 1
-RESOLVED = 2
-
 
 class Vertex(object):
     def __init__(self, index, out_edges=None):
