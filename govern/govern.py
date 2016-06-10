@@ -1,4 +1,6 @@
 import sys
+from collections import defaultdict
+from itertools import count
 
 INFILE = 'govern.in'
 OUTFILE = 'govern.out'
@@ -7,59 +9,36 @@ VISITED = 1
 RESOLVED = 2
 
 
-class Vertex(object):
-    def __init__(self, name, out_edges=None):
-        self.name = name
-        self.out_edges = out_edges or []
-
-    def __repr__(self):
-        return self.name
-
-
-class Edge(object):
-    def __init__(self, start_v, end_v):
-        self.start_v = start_v
-        self.end_v = end_v
-
-    def __repr__(self):
-        return u'{} -> {}'.format(self.start_v, self.end_v)
-
-
-class Graph(object):
-    def __init__(self, vertices=None):
-        self.vertices = vertices or {}
-
-
 def dfs(graph):
-    unvisited = set(graph.vertices.values())
+    unvisited = set(graph.keys())
     status = {}
     order_set = set()
 
     while unvisited:
-        for vertex in dfs_iteration(status, unvisited, unvisited.pop()):
+        for vertex in dfs_iteration(graph, status, unvisited, unvisited.pop()):
             if vertex in order_set:
                 continue
             order_set.add(vertex)
             yield vertex
 
 
-def dfs_iteration(status, unvisited, start_v):
+def dfs_iteration(graph, status, unvisited, start_v):
     stack = [start_v]
     while stack:
         vertex = stack.pop()
         if vertex in unvisited:
             unvisited.remove(vertex)
 
-        if status.get(vertex.name) == RESOLVED:
+        if status.get(vertex) == RESOLVED:
             continue
 
-        neighbors = [edge.end_v for edge in vertex.out_edges if edge.end_v.name not in status]
+        neighbors = [edge for edge in graph[vertex] if edge not in status]
         if neighbors:
-            status[vertex.name] = VISITED
+            status[vertex] = VISITED
             stack.append(vertex)
             stack.extend(neighbors)
         else:
-            status[vertex.name] = RESOLVED
+            status[vertex] = RESOLVED
             yield vertex
 
 
@@ -68,31 +47,32 @@ def get_topological_sort(graph):
 
 
 def read_graph(fl):
-    graph = Graph()
+    graph = defaultdict(set)
+    mapping = {}
+    rev_mapping = {}
+    i = count()
     for line in fl.readlines():
         _from, to = line.rstrip().split()
-
-        # get or create start v
-        start_v = graph.vertices.get(_from)
-        if not start_v:
-            start_v = graph.vertices[_from] = Vertex(_from, [])
-        # get or create end v
-        end_v = graph.vertices.get(to)
-        if not end_v:
-            end_v = graph.vertices[to] = Vertex(to, [])
-
-        start_v.out_edges.append(Edge(start_v, end_v))
-    return graph
+        start_v = mapping.get(_from)
+        if start_v is None:
+            start_v = mapping[_from] = i.next()
+            rev_mapping[start_v] = _from
+        end_v = mapping.get(to)
+        if end_v is None:
+            end_v = mapping[to] = i.next()
+            rev_mapping[end_v] = to
+        graph[start_v].add(end_v)
+    return rev_mapping, graph
 
 
 def main():
     # read
     with open(sys.argv[1] if len(sys.argv) > 1 else INFILE, 'r') as fl:
-        graph = read_graph(fl)
+        mapping, graph = read_graph(fl)
         path = get_topological_sort(graph)
 
     # yes, all in memory. but only one I/O call on write(), right?
-    result = '\n'.join(str(line) for line in path) + '\n'
+    result = '\n'.join(mapping[line] for line in path) + '\n'
 
     # write
     with open(OUTFILE, 'w') as fl:
