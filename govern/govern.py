@@ -48,31 +48,21 @@ def get_topological_sort(graph):
 
 def read_graph(fl):
     graph = defaultdict(set)
-    mapping = {}
-    rev_mapping = {}
     i = count()
     for line in fl.readlines():
         _from, to = line.rstrip().split()
-        start_v = mapping.get(_from)
-        if start_v is None:
-            start_v = mapping[_from] = i.next()
-            rev_mapping[start_v] = _from
-        end_v = mapping.get(to)
-        if end_v is None:
-            end_v = mapping[to] = i.next()
-            rev_mapping[end_v] = to
-        graph[start_v].add(end_v)
-    return rev_mapping, graph
+        graph[_from].add(to)
+    return graph
 
 
 def main():
     # read
     with open(sys.argv[1] if len(sys.argv) > 1 else INFILE, 'r') as fl:
-        mapping, graph = read_graph(fl)
+        graph = read_graph(fl)
         path = get_topological_sort(graph)
 
     # yes, all in memory. but only one I/O call on write(), right?
-    result = '\n'.join(mapping[line] for line in path) + '\n'
+    result = '\n'.join(line for line in path) + '\n'
 
     # write
     with open(OUTFILE, 'w') as fl:
