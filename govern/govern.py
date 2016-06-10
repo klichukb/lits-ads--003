@@ -1,6 +1,5 @@
 import sys
 from collections import defaultdict
-from itertools import count
 
 INFILE = 'govern.in'
 OUTFILE = 'govern.out'
@@ -48,7 +47,6 @@ def get_topological_sort(graph):
 
 def read_graph(fl):
     graph = defaultdict(set)
-    i = count()
     for line in fl.readlines():
         _from, to = line.rstrip().split()
         graph[_from].add(to)
@@ -59,10 +57,10 @@ def main():
     # read
     with open(sys.argv[1] if len(sys.argv) > 1 else INFILE, 'r') as fl:
         graph = read_graph(fl)
-        path = get_topological_sort(graph)
 
+    path = get_topological_sort(graph)
     # yes, all in memory. but only one I/O call on write(), right?
-    result = '\n'.join(line for line in path) + '\n'
+    result = '\n'.join(path) + '\n'
 
     # write
     with open(OUTFILE, 'w') as fl:
