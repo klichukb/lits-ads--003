@@ -5,8 +5,7 @@ OUTFILE = 'career.out'
 
 
 def solve(points, max_levels):
-    solutions = [0 for i in range(max_levels)]
-    solutions[:max_levels] = points[-1]
+    solutions = points[-1]
     for i in xrange(max_levels - 1, -1, -1):
         for j in xrange(i):
             solutions[j] = max(solutions[j], solutions[j + 1]) + points[i - 1][j]
