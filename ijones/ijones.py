@@ -18,7 +18,7 @@ def solve(matrix, m, n, targets):
     # P[i] is a map of characters and possible path counts that Mr. Jones can take if he happens
     # to be on the same character on any column on the left of [i].
     solutions = [0 for i in xrange(m)]
-    path_count = {c: 0 for c in ascii_lowercase}
+    path_count = dict.fromkeys(ascii_lowercase, 0)
 
     for i in targets:
         solutions[i] = 1
