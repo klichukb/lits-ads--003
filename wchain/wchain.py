@@ -18,10 +18,9 @@ def get_max_path_lengths(words):
     words.sort(key=len)
     solutions = {}
     solutions[words[0]] = 1
-    for i in range(1, len(words)):
-        parent = words[i]
+    for parent in words[1:]:
         max_length = 0
-        for i in range(len(parent)):
+        for i in xrange(len(parent)):
             option = parent[:i] + parent[i + 1:]
             if option not in solutions:
                 continue
