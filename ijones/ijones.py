@@ -1,3 +1,6 @@
+from collections import defaultdict
+from string import ascii_lowercase
+
 INFILE = 'ijones.in'
 OUTFILE = 'ijones.out'
 
@@ -15,34 +18,31 @@ def solve(matrix, m, n, targets):
     # P[i] is a map of characters and possible path counts that Mr. Jones can take if he happens
     # to be on the same character on any column on the left of [i].
     solutions = [0 for i in xrange(m)]
-    start = ord('a')
-    max_size = (ord('z') - start + 1)
-    path_count = [0 for i in xrange(max_size)]
+    path_count = {c: 0 for c in ascii_lowercase}
 
     for i in targets:
         solutions[i] = 1
-        path_count[ord(matrix[i][n - 1]) - start] += 1
+        path_count[matrix[i][n - 1]] += 1
 
-    interested = {ord(matrix[target][n - 1]) - start for target in targets}
+    interested = {matrix[target][n - 1] for target in targets}
     for j in xrange(n - 2, -1, -1):
         # build updates here, apply later.
-        defer = [0 for i in xrange(max_size)]
+        defer = defaultdict(int)
         for i in xrange(m):
             cell = matrix[i][j]
-            cell_ord = ord(cell) - start
-            if cell_ord not in interested:
+            if cell not in interested:
                 if not solutions[i]:
                     continue
             if cell == matrix[i][j + 1] or not solutions[i]:
-                solutions[i] = path_count[cell_ord]
+                solution = path_count[cell]
             else:
-                solutions[i] += path_count[cell_ord]
-            defer[cell_ord] += solutions[i]
+                solution = solutions[i] + path_count[cell]
+            solutions[i] = solution
+            defer[cell] += solution
         # apply deferred updates
-        for i, value in enumerate(defer):
-            if value:
-                interested.add(i)
-                path_count[i] += value
+        for i, value in defer.items():
+            interested.add(i)
+            path_count[i] += value
 
     return sum(solutions)
 
